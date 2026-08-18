@@ -2,6 +2,7 @@
 name = "audctl"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
 repository = "https://github.com/someotherself/audctl"
 description = "Simple cli app for audio playback and recording"
 categories = ["multimedia::audio", "multimedia", "cli"]
@@ -9,7 +10,7 @@ categories = ["multimedia::audio", "multimedia", "cli"]
 [dependencies]
 clap = { version = "4.6.1", features = ["derive"] }
 ignore = "0.4.28"
-auditorium = { version = "0.1.0", path = "../auditorium" }
+auditorium = { version = "0.1.0" }
 anyhow = "1.0.103"
 ctrlc = "3.5.2"
 confy = "2.0.0"

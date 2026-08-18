@@ -85,6 +85,8 @@ dependencies = [
 [[package]]
 name = "auditorium"
 version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0414daab1baf8c07dcbd6a8559cb9489cc66ac7735246ab452d386ecff1b7e5a"
 dependencies = [
  "crossbeam-channel",
  "maudio",
@@ -511,7 +513,9 @@ checksum = "0ceec5bc11778974d1bcb055b18002eba7f4b3518b6a0081b3af5f21666da9ad"
 
 [[package]]
 name = "maudio"
-version = "0.1.10"
+version = "0.1.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c737ee645fab2d94e5d67b4fb83b998250d4f1176dca65771965771c97e1c3b9"
 dependencies = [
  "maudio-sys",
 ]
@@ -519,6 +523,8 @@ dependencies = [
 [[package]]
 name = "maudio-sys"
 version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5083fb2131d5a4d9cf42703a656ee44b153054fc435bdf3eeed0363931932491"
 dependencies = [
  "cc",
 ]
