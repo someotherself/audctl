@@ -28,6 +28,24 @@
 
 ## Usage
 
+### Controls during playback
+| Key      | Action                   |
+| -------- | ------------------------ |
+| `Space`  | Pause / resume playback  |
+| `Ctrl+C` | Pause / resume playback  |
+| `←`      | Seek backward            |
+| `→`      | Seek forward             |
+| `n`      | Skip to the next track   |
+| `p`      | Go to the previous track |
+| `q`      | Quit playback            |
+
+### Controls during recording
+| Key      | Action                   |
+| -------- | ------------------------ |
+| `Space`  | Pause / resume recording |
+| `Ctrl+C` | Pause / resume recording |
+| `q`      | Stop and quit            |
+
 ### Playback
 ```bash
 # Play everything in the current directory (no recursion)
