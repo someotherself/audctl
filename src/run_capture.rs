@@ -3,7 +3,10 @@ use std::path::Path;
 use auditorium::{device::CaptureDevice, host::Host};
 
 use crate::{
-    RunningFlags, available_path, cli::{DeviceTypes, RecordOpts}, run_playback::find_device, term::{TermGuard, capture_control_loop},
+    RunningFlags, available_path,
+    cli::{DeviceTypes, RecordOpts},
+    run_playback::find_device,
+    term::{TermGuard, capture_control_loop},
 };
 
 #[allow(unused)]
@@ -55,7 +58,7 @@ pub(crate) fn run_capture(opts: &RecordOpts, flags: RunningFlags) -> anyhow::Res
 
     selected.device.start_device()?;
 
-    capture_control_loop(flags, &selected.device)?;
+    capture_control_loop(flags, &selected.device, &path)?;
 
     host.shutdown()?;
 

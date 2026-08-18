@@ -228,7 +228,6 @@ pub(crate) fn run_playback(
         backwards = false;
         loaded.audio.start_audio()?;
 
-
         match playback_control_loop(flags.clone(), loaded, &selected.device)? {
             PlayerCommand::Next => continue,
             PlayerCommand::Previous => {

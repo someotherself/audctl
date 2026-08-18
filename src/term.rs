@@ -1,4 +1,9 @@
-use std::{io::Write, path::Path, sync::atomic::Ordering, time::{Duration, Instant}};
+use std::{
+    io::Write,
+    path::Path,
+    sync::atomic::Ordering,
+    time::{Duration, Instant},
+};
 
 use anyhow::Error;
 use auditorium::device::{CaptureDevice, PlaybackDevice};
@@ -41,8 +46,12 @@ fn command_from_key(key: KeyEvent) -> Option<PlayerCommand> {
 pub(crate) fn capture_control_loop(
     flags: RunningFlags,
     device: &CaptureDevice,
+    path: &Path,
 ) -> anyhow::Result<()> {
+    let path = path.canonicalize().unwrap_or(path.into());
     let mut next_update = Instant::now() + Duration::from_secs(1);
+    let mut elapsed = Duration::ZERO;
+    let mut started_at = Instant::now();
 
     loop {
         let timeout = next_update.saturating_duration_since(Instant::now());
@@ -54,9 +63,14 @@ pub(crate) fn capture_control_loop(
             match command {
                 PlayerCommand::TogglePause => {
                     let old = flags.is_paused.fetch_xor(true, Ordering::Relaxed);
+
                     if old {
+                        // Was paused, now resuming.
+                        started_at = Instant::now();
                         device.resume_recording()?;
                     } else {
+                        // Was recording, now pausing.
+                        elapsed += started_at.elapsed();
                         device.pause_recording()?;
                     }
                 }
@@ -68,7 +82,14 @@ pub(crate) fn capture_control_loop(
         }
 
         if Instant::now() >= next_update {
-            // TODO: print recorded timer
+            let current = if flags.is_paused.load(Ordering::Relaxed) {
+                elapsed
+            } else {
+                elapsed + started_at.elapsed()
+            };
+
+            print_recording_progress(current, &path);
+
             next_update += Duration::from_secs(1);
         }
     }
@@ -79,7 +100,7 @@ pub(crate) fn capture_control_loop(
 pub(crate) fn playback_control_loop(
     flags: RunningFlags,
     loaded: &LoadedTrack,
-    device: &PlaybackDevice
+    device: &PlaybackDevice,
 ) -> anyhow::Result<PlayerCommand> {
     let mut timer: usize = 0;
     let len_sec = loaded.audio.length_seconds()?;
@@ -88,7 +109,7 @@ pub(crate) fn playback_control_loop(
         let res = loop {
             if timer.is_multiple_of(1000) {
                 let cur = loaded.audio.cursor_seconds()?.round();
-                print_progress(&loaded.path, cur, len_sec as u64);
+                print_playback_progress(&loaded.path, cur, len_sec as u64);
             }
             timer += 10;
 
@@ -159,25 +180,17 @@ pub(crate) fn move_cursor_to_start() {
     .unwrap();
 }
 
-fn print_progress(path: &Path, cur: f32, total: u64) {
+fn print_playback_progress(path: &Path, cur: f32, total: u64) {
     let mut stderr = std::io::stderr();
 
-    let cur = cur
-        .min(total as f32)
-        .max(0.0)
-        .round() as u64;
+    let cur = cur.min(total as f32).max(0.0).round() as u64;
 
     let cur = format_duration(cur);
     let total = format_duration(total);
 
     let name = path.file_name().unwrap_or(path.as_os_str());
 
-    crossterm::execute!(
-        stderr,
-        MoveToColumn(0),
-        Clear(ClearType::CurrentLine),
-    )
-    .unwrap();
+    crossterm::execute!(stderr, MoveToColumn(0), Clear(ClearType::CurrentLine),).unwrap();
 
     write!(stderr, "{cur} / {total} | {}", name.display()).unwrap();
 
@@ -193,6 +206,26 @@ fn format_duration(seconds: u64) -> String {
         format!("{hours:02}:{minutes:02}:{seconds:02}")
     } else {
         format!("{minutes:02}:{seconds:02}")
+    }
+}
+
+fn print_recording_progress(elapsed: Duration, path: &Path) {
+    let total_seconds = elapsed.as_secs();
+
+    let hours = total_seconds / 3600;
+    let minutes = (total_seconds % 3600) / 60;
+    let seconds = total_seconds % 60;
+
+    if hours > 0 {
+        eprint!(
+            "\r{hours:02}:{minutes:02}:{seconds:02} - RECORDING - {}",
+            path.display()
+        );
+    } else {
+        eprint!(
+            "\r{minutes:02}:{seconds:02} - RECORDING - {}",
+            path.display()
+        );
     }
 }
 

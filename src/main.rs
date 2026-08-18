@@ -169,13 +169,12 @@ pub(crate) fn available_path(path: &Path) -> PathBuf {
         return path.to_path_buf();
     }
 
-    
     let path = if path.is_dir() {
         path.join("audctl_recording.wav")
     } else {
         path.into()
     };
-    
+
     let extension = path.extension().unwrap_or_default().to_string_lossy();
     let stem = path.file_stem().unwrap_or_default().to_string_lossy();
 
