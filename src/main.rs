@@ -1,3 +1,19 @@
+//! `audctl` is a command-line audio player and recorder.
+//!
+//! It supports playback of common audio formats through Symphonia and WAV
+//! recording through the `auditorium` audio engine.
+//!
+//! # Features
+//!
+//! - Play audio files and directories.
+//! - Recursively search directories for supported audio files.
+//! - Shuffle and repeat playlists.
+//! - Select playback and capture devices.
+//! - Record audio to WAV files.
+//! - Pause, resume, seek, and control playback interactively.
+//! - Store files and directories as named favorites.
+//!
+//! See the project README for detailed usage and supported formats.
 use std::{
     path::{Path, PathBuf},
     rc::Rc,
