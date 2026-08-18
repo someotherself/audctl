@@ -1,12 +1,12 @@
 use std::path::PathBuf;
 
 use auditorium::{
-    context::{ContextBuilder, ContextOps, EnumerateControl},
     device::PlaybackDevice,
-    device_id::DeviceId,
-    device_type::DeviceType,
     host::Host,
-    sample_rate::SampleRate,
+    maudio::context::{ContextBuilder, ContextOps, EnumerateControl},
+    maudio::device_id::DeviceId,
+    maudio::device_type::DeviceType,
+    maudio::sample_rate::SampleRate,
     sources::audio::Audio,
 };
 
@@ -94,7 +94,6 @@ impl BuiltPlayDevice {
         {
             let device = host
                 .build_playback_device()?
-                .clipping(false)?
                 .producing_flag(flags.is_producing.clone())?
                 .device_id(&selected.id)?
                 .build()?;
@@ -111,7 +110,6 @@ impl BuiltPlayDevice {
             .producing_flag(flags.is_producing.clone())?
             .sample_rate(SampleRate::Sr44100)?
             .channels(2)?
-            .clipping(false)?
             .build()?;
         Ok(BuiltPlayDevice {
             device,
